@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<json-logger:config name="JSON_Logger_Config" doc:name="JSON Logger Config" doc:id="94d84dda-6105-4dc2-80c4-00313d030f9f" environment="${mule.env}" applicationName="${jsonlogger.applicationName}" applicationVersion="${jsonlogger.version}" prettyPrint="false" parseContentFieldsInJsonOutput="false"/>
+	<configuration-properties doc:name="Configuration properties" doc:id="58981ea8-ad8f-486f-bf31-9db3cabad0c1" file="config.yaml" />
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="8bb54c22-b856-44b8-88c0-2435bbf3be4f" >
+		<db:generic-connection url="jdbc:postgresql://localhost:5432/postgres" driverClassName="org.postgresql.Driver" user="postgres" password="Mulesoft" />
+	</db:config>
+	<http:listener-config name="HTTP_Listener_config1" doc:name="HTTP Listener config" doc:id="6aa6e03e-2933-406f-a0cd-384e0efe20e5" >
+		<http:listener-connection host="0.0.0.0" port="${http.port}" />
+	</http:listener-config>
+</mule>

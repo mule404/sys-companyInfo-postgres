@@ -1,0 +1,17 @@
+jsonlogger:
+  applicationName: "sysapi_companyinfo_postgres"
+  version: v1
+  
+mule:
+  env: "prod"
+
+http:
+  port: "8089"
+
+
+DB:
+  username: "sql6464925"
+  password: "aLCH5uBDyz"
+  host: "sql6.freesqldatabase.com"
+  port: "3306"
+  database: "sql6464925"

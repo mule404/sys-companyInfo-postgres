@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="selectFlow" doc:id="b037d7b0-8a10-43ef-afdd-61659d000b8e" >
+		<json-logger:logger doc:name="startLogger" doc:id="bf848eb5-0bdf-473c-8214-471ed57a7da4" message='#["sysAPI postgres operation intiated" ++ now() as String]' config-ref="JSON_Logger_Config"/>
+		<db:select doc:name="callPostgressDB" doc:id="f3200ad9-1d11-45fc-85fa-5dd01bbe8e7a" config-ref="Database_Config">
+			<db:sql ><![CDATA[select ID,CompanyName,NoOfEmployees,PremiumAmount,CoverAmount,ParentsIncluded,InsurerName
+ from CompanyInfo where ID= :id]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{id: attributes.queryParams.ID as Number}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="80047cac-0803-49a0-b52b-270f1650f670" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map(items,index) -> {
+	"companyName": items.CompanyName,
+	"insurer_name": items.InsurerName,
+	"premiumum_amt": items.PremiumAmount,
+	"insurancecoverage": items.CoverAmount,
+	"parents_included": items.ParentsIncluded
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<json-logger:logger doc:name="endLogger" doc:id="6a984d89-d215-4918-a284-b2d9c93dcddc" config-ref="JSON_Logger_Config" message='#["sysAPI postgres operation completed" ++ now() as String]'/>
+	</flow>
+	<flow name="updateFlow" doc:id="c44d7b2c-9ffa-4992-b355-0073c22330ec" >
+		<json-logger:logger doc:name="Logger" doc:id="a71aa968-06e4-471e-af5a-0c4e8914dcd8" config-ref="JSON_Logger_Config" message='#["sysAPI postgres update operation intiated" ++ now() as String]'/>
+		<db:update doc:name="Update" doc:id="a12befae-fd77-4ca4-ad30-e06cef95a3dc" config-ref="Database_Config">
+			<db:sql ><![CDATA[UPDATE CompanyInfo	
+SET "PremiumAmount"=:PremiumAmount,"CoverAmount"=:CoverAmount,"ParentsIncluded"=:ParentsIncluded
+WHERE "Id"=:id and "InsurerName"= :InsurerName]]></db:sql>
+			<db:input-parameters ><![CDATA[{
+	'PremiumAmount': "test",
+	'CoverAmount': "test2",
+	'ParentsIncluded': "test3"
+	'id': attributes.queryParams.id
+}]]></db:input-parameters>
+		</db:update>
+		<ee:transform doc:name="Transform Message" doc:id="d14ddecc-4ba4-4eb9-a048-f1453e101b42" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<json-logger:logger doc:name="Logger" doc:id="07c45c38-c5ae-40cc-9383-25616411e417" config-ref="JSON_Logger_Config" message='#["sysAPI postgres update operation intiated" ++ now() as String]'/>
+	</flow>
+</mule>
